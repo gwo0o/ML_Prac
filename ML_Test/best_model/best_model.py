@@ -9,8 +9,8 @@ import pandas as pd
 from keras.models import load_model
 model = load_model('best_model.h5')
 
-encoded = [[7355, 3521, 151, 647, 5468]]
-max_len = 10
+encoded = [[6866, 6089, 3106, 1853, 9839]]
+max_len = 5
 
 pad_new = pad_sequences(encoded, maxlen = max_len)
 classifier = model.predict(pad_new)

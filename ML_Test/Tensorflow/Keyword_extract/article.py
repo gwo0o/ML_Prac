@@ -10,10 +10,13 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT title, content FROM nm_articles LIMIT 0, 500")
+mycursor.execute("SELECT category_ids, content FROM nm_press_article_20220622 WHERE LENGTH(category_ids) = 9 LIMIT 0, 10")
 
 myres = mycursor.fetchall()
 
 article = []
+category_ids = []
 for i in range(0, len(myres)):
-    article.append(myres[i][1].decode())    
+    article.append(myres[i][1].decode())
+    category_ids.append(myres[i][0].decode())
+# print(article) 
