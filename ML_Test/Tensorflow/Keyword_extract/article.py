@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT category_ids, content FROM nm_press_article_20220622 WHERE LENGTH(category_ids) = 9 LIMIT 0, 10")
+mycursor.execute("SELECT category_ids, content FROM nm_press_article_20220622 WHERE LENGTH(category_ids) = 9 LIMIT 0, 200")
 
 myres = mycursor.fetchall()
 

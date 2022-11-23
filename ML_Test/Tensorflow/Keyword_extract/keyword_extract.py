@@ -16,6 +16,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import Embedding, Dense, GRU, LSTM
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical
 # from tensorflow.keras.preprocessing.text import Tokenizer
 # from cnn import cnn
 
@@ -28,7 +30,7 @@ article_keyword = []
 
 for i in range(len(article)):
     key_array = tw.pos(article[i])
-# print(key_array)
+    # print(key_array)
     keyword_array = []
     pri_keyword = []
 
@@ -258,25 +260,39 @@ key_train_data, key_test_data = train_test_split(res, test_size = 0.25, random_s
 cate_train_data, cate_test_data = train_test_split(total_data, test_size = 0.25, random_state = 20)
 
 
-X_train = key_train_data
-Y_train = cate_train_data
-X_test= key_test_data
-Y_test = cate_test_data
+X_train = np.array(key_train_data)
+Y_train = np.array(cate_train_data)
+X_test= np.array(key_test_data)
+Y_test = np.array(cate_test_data)
+print(Y_test)
 
-embedding_dim = 128
-hidden_units = 128
-vocab_size = 20
+try:
+    loaded_model = load_model('best_model.h5')
+except:
+    print('load fail')
+    max_len = 5
 
-model = Sequential()
-model.add(Embedding(vocab_size, embedding_dim))
-model.add(LSTM(hidden_units))
-model.add(Dense(10, activation='softmax'))
+    X_train = pad_sequences(X_train, maxlen=max_len)
+    X_test = pad_sequences(X_test, maxlen=max_len)
 
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
-mc = ModelCheckpoint('best_model.h5', monitor='val_acc', mode='max', verbose=1, save_best_only=True)
+    Y_train = to_categorical(Y_train)
+    Y_test = to_categorical(Y_test)
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
-history = model.fit(X_train, Y_train, epochs=20, callbacks=[es, mc], batch_size=64, validation_split=0.2)
+    embedding_dim = 100
+    hidden_units = 128
+    vocab_size = len(word2id)
+    print(len(word2id))
+
+    model = Sequential()
+    model.add(Embedding(vocab_size, embedding_dim))
+    model.add(LSTM(hidden_units))
+    model.add(Dense(10, activation='softmax'))
+
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
+    mc = ModelCheckpoint('best_model.h5', monitor='val_acc', mode='max', verbose=1, save_best_only=True)
+
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc'])
+    history = model.fit(X_train, Y_train, epochs=10, callbacks=[es, mc], batch_size=64, validation_split=0.2)
 
 loaded_model = load_model('best_model.h5')
-print("\n 테스트 정확도: %.4f" % (loaded_model.evaluate(X_test, Y_test)[1]))
+# print("\n 테스트 정확도: %.4f" % (loaded_model.evaluate(X_test, Y_test)[1]))
