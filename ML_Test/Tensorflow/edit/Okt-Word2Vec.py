@@ -9,6 +9,7 @@ import gensim
 from gensim.models.fasttext import FastText
 import gensim.models.word2vec
 import gensim.downloader as api
+from gensim.models import KeyedVectors
 
 from PIL import Image
 import urllib.request
@@ -100,3 +101,95 @@ model = Word2Vec(sentences = tokenized_data, size = 100, window = 1, min_count =
 # print(find_p)
 
 find_p = ['비트코인']
+
+# model.wv.most_similar(find_p[0])  # 
+
+search_array = []
+keyword_weight = []
+for tag in range(len(find_p)):
+    try:
+#         print(model.wv.most_similar(find_p[tag+1]))
+        for i in range(len(model.wv.most_similar(find_p[tag]))):
+            search_array.append(model.wv.most_similar(find_p[tag])[i][0])
+            keyword_weight.append(model.wv.most_similar(find_p[tag])[i][1])
+    except:
+        print(find_p[tag],"은(는) 추천할 기사가 없습니다.")
+for i in range(len(find_p)-1):
+    search_array.append(find_p[i])
+    keyword_weight.append(1.0)
+print(search_array)
+print(keyword_weight)
+
+
+weight_sum = []
+recommend_press3 = []
+url_array = []
+for a in range(len(keyword_array)):
+    p_key = []
+    for i in keyword_array[a]:                          # i = 키워드 1개
+        if i in search_array:
+            p_key.append(search_array.index(i))
+    if len(p_key) >= 2:
+        temp = 0
+        for i in p_key:
+            temp += keyword_weight[i]
+        weight_sum.append(temp)
+        recommend_press3.append(title_array[a])
+        url_array.append(picture_array[a])
+# print(url_array)
+# print(weight_sum.index(max(weight_sum)))
+# print(weight_sum)
+# for i in weight_sum:
+#     if i >= 2:
+#         print("기사별 가중치 :", i)
+if len(weight_sum) != 0:
+    print("추천 기사 :", recommend_press3[weight_sum.index(max(weight_sum))])
+    print("해당 사진 :", url_array[weight_sum.index(max(weight_sum))])
+    url = url_array[weight_sum.index(max(weight_sum))]
+    if pd.isna(url) == False:
+        res = requests.get(url)
+        request_get_img = Image.open(BytesIO(res.content))
+        plt.figure(figsize = (15,15))
+        plt.subplot(3,3,1)
+        plt.axis('off')
+        plt.imshow(request_get_img)
+else:
+    print("추천기사가 없습니다.")
+
+
+temp = []
+temp = sorted(weight_sum, reverse=True)
+# print(temp)
+# print()
+# print(weight_sum)
+cnt = 0
+while cnt < len(recommend_press3):
+    fil_list = list(filter(lambda x: weight_sum[x] == temp[cnt], range(len(temp))))
+    for num in fil_list:
+        if pd.isna(url_array[num]):
+            pass
+        print(recommend_press3[num], url_array[num])
+#         url = url_array[num]
+#         res = requests.get(url)
+        
+#         request_get_img = Image.open(BytesIO(res.content))
+        
+        cnt += 1
+        url = url_array[num]
+#         print(url)
+        plt.figure(figsize = (15,15))
+        plt.subplot(2,2,1)
+        plt.title(cnt)
+        try:
+            res = requests.get(url)
+            request_get_img = Image.open(BytesIO(res.content))
+        except:
+            pass
+        plt.imshow(request_get_img)
+        plt.axis('off')
+        if cnt > 9:
+            break
+    if cnt > 9:
+        break
+
+model.wv.save_word2vec_format('news_w2v')
