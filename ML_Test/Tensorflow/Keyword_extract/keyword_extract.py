@@ -44,6 +44,8 @@ for i in range(len(article)):
 vectorizer = TfidfVectorizer()
 sp_matrix = vectorizer.fit_transform(article_keyword)
 
+# print('sp_matrix', sp_matrix)
+
 word2id = defaultdict(lambda : 0)
 for idx, feature in enumerate(vectorizer.get_feature_names()):  
     word2id[feature] = idx
@@ -53,6 +55,8 @@ for idx, feature in enumerate(vectorizer.get_feature_names()):
 tdidf = {}
 for i, sent in enumerate(article_keyword):
     tdidf[i] = [(token, sp_matrix[i, word2id[token]]) for token in sent.split()]
+
+# print('tdidf', tdidf)  # {0: [('파이낸셜뉴스', 0.04911270611173677), ('애경', 0.24811880389895863), ('산업', 0.24811880389895863), ('지난', 0.054687767085255384), ('메가박스', 0.16541253593263908), ('상암', 0.08270626796631954), ('월드컵경기', 0.08270626796631954), ('장점', 0.0703078838142362), ... }
 
 res = []
 res2 = []
@@ -64,7 +68,7 @@ for i in range(len(article_keyword)):
     temp2 = []
     for v in tdidf[i]:
         if v not in result:
-            result.append(v)               # 중복 제거
+            result.append(v)   # 중복 제거
     # print(result)    # 각 항목들의 가중치를 볼 수 있다.
     try:
         for j in range(5):
@@ -281,12 +285,12 @@ except:
     embedding_dim = 100
     hidden_units = 128
     vocab_size = len(word2id)
-    print(len(word2id))
 
     model = Sequential()
-    model.add(Embedding(vocab_size, embedding_dim))
+    model.add(Embedding(vocab_size, embedding_dim, input_length=max_len))
     model.add(LSTM(hidden_units))
     model.add(Dense(10, activation='softmax'))
+    model.summary()
 
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
     mc = ModelCheckpoint('best_model.h5', monitor='val_acc', mode='max', verbose=1, save_best_only=True)

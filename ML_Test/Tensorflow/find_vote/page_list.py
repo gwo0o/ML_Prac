@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT _id, title, summary FROM nm_page WHERE page_parent_id = 2586 ORDER BY _id DESC LIMIT 0, 10")
+mycursor.execute("SELECT _id, title, summary FROM nm_page WHERE page_parent_id = 2598 ORDER BY _id DESC LIMIT 0, 10")
 
 myres = mycursor.fetchall()
 
