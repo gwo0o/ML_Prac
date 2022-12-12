@@ -10,5 +10,5 @@
 
 # 사용법
 1. ML_Test -> Tensorflow -> Keyword_extract -> python3 keyword_extract.py
-2. 관련 노션 https://www.notion.so/griplabs/ML-5fd6bda2a40147149e568bf9f619b2a1
+2. 관련 노션 https://www.notion.so/ML-822658e91a8541269f78516d33e0aa8f
 
