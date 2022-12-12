@@ -69,7 +69,7 @@ for i in range(len(article_keyword)):
     for v in tdidf[i]:
         if v not in result:
             result.append(v)   # 중복 제거
-    # print(result)    # 각 항목들의 가중치를 볼 수 있다.
+    print(result)    # 각 항목들의 가중치를 볼 수 있다.
     try:
         for j in range(5):
             temp.append(word2id[result[j][0]])
