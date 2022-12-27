@@ -2,6 +2,7 @@ from add_keyword import add_keyword
 from del_keyword import del_keyword
 from article import article
 from article import category_ids
+from article import article_key
 from ckonlpy.tag import Twitter
 from collections import Counter
 import tfidf as idf
@@ -18,6 +19,7 @@ from tensorflow.keras.layers import Embedding, Dense, GRU, LSTM
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
+import input_new_tags as update
 # from tensorflow.keras.preprocessing.text import Tokenizer
 # from cnn import cnn
 
@@ -69,21 +71,24 @@ for i in range(len(article_keyword)):
     for v in tdidf[i]:
         if v not in result:
             result.append(v)   # 중복 제거
-    print(result)    # 각 항목들의 가중치를 볼 수 있다.
+    # print(result)    # 각 항목들의 가중치를 볼 수 있다.
     try:
-        for j in range(5):
+        for j in range(10):
             temp.append(word2id[result[j][0]])
             temp2.append(result[j][0])
             # print(result[j][0], end = ' ')     # 상위 5개의 단어만 키워드로 추출하고자한다.
     except:
-        continue
+        temp.append('NOT_EXIST_DATA')
+        temp2.append('NOT_EXIST_DATA')  # update.temp 수행하기 위해서 임시방편
     # print('\n', end = '')
 
     res.append(temp)
     res2.append(temp2)
 
 # print(res)  # [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15]]
-# print(res2)  # [['a', 'b', 'c', 'd', 'e'], ['f', 'g', 'h', 'i', 'j']]
+for i in range(len(res2)):
+    print(res2[i], article_key[i])  # [['a', 'b', 'c', 'd', 'e'], ['f', 'g', 'h', 'i', 'j']]
+    update.temp(res2[i], article_key[i])
 
 total_data = category_ids
 
